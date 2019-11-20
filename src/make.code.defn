@@ -1,0 +1,5 @@
+# -*-Makefile-*-
+# Sub-makefile for thorn BrillEvolve
+
+SRCS = ADMBrillData.c  qshape.c  ParamCheck.c
+

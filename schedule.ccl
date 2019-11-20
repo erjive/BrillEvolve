@@ -1,0 +1,19 @@
+# Schedule definitions for thorn BrillEvolve
+# $Header$
+
+if (CCTK_Equals(initial_data,"brilldata") || CCTK_Equals(initial_data,"brilldata2D"))
+{
+
+  STORAGE: brillconf
+
+  schedule BrillData_ParamChecker at CCTK_PARAMCHECK
+  {
+    LANG: C
+    OPTIONS: global
+  } "Check that the metric_type is recognised"
+
+  schedule brilldata in ADMBase_PostInitial
+  {
+    LANG: C
+  } "Construct Brill wave initial data"
+}

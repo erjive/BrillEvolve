@@ -1,0 +1,337 @@
+#------------------------------------------------------------------------------
+ActiveThorns = "
+  ADMBase
+  ADMCoupling
+  ADMMacros
+  #ADMConstraints
+  # AEILocalInterp
+  # AHFinderDirect
+  Boundary
+  BrillEvolve
+  Carpet
+  CarpetInterp
+  CarpetIOASCII
+  CarpetIOBasic
+  CarpetIOHDF5
+  CarpetIOScalar
+  CarpetLib
+  # CarpetMask
+  CarpetReduce
+  CarpetRegrid2
+  CarpetSlab
+  # CarpetTracker
+  CartGrid3D
+  CoordBase
+  CoordGauge
+  # Dissipation
+  # Formaline
+  Fortran
+  GenericFD
+  # GSL
+  # HDF5
+  InitBase
+  IOUtil
+  # LeanBSSNMoL
+  LocalInterp
+  LoopControl
+  ML_ADMConstraints
+  ML_BSSN
+  ML_BSSN_Helper
+  MoL
+  # Multipole
+  NaNChecker
+  NewRad
+  # PunctureTracker
+  # QuasiLocalMeasures
+  ReflectionSymmetry
+  # RotatingSymmetry180
+  Slab
+  SpaceMask
+  SphericalSurface
+  StaticConformal
+  SummationByParts
+  SymBase
+  # SystemStatistics
+  # TerminationTrigger
+  Time
+  TmunuBase
+  Vectors
+"
+#------------------------------------------------------------------------------
+#Read initial data
+
+IO::filereader_ID_dir   = "/home/erik/simulations/IDBrilla5/output-0000/IDBrillMoLCarpet/"
+#IO::filereader_ID_dir   = "../simulations/IDBrillMoL-n2dtol0/output-0000/IDBrillMoL"
+IO::filereader_ID_files = "brillpsi.it_2840"
+#IO::filereader_ID_files = "brillpsi"
+IO::filereader_ID_vars  = "BrillEvolve::brillpsi{alias='IDBrillMoL::phi'}"
+#IO::filereader_ID_vars  = "brillpsi"
+
+#Brill wave parameters
+#-------------------------------------------------------------------------------
+BrillEvolve :: gundlacha = 5.0
+
+
+# Grid setup
+#------------------------------------------------------------------------------
+
+CartGrid3D::type                     = "coordbase"
+Carpet::domain_from_coordbase        = yes
+CoordBase::domainsize                = "minmax"
+
+# make sure all (xmax - xmin)/dx are integers!
+CoordBase::xmin                      =    0.0
+CoordBase::ymin                      =    0.0
+CoordBase::zmin                      =    0.0
+CoordBase::xmax                      =   +10.0
+CoordBase::ymax                      =   +10.0
+CoordBase::zmax                      =   +10.0
+CoordBase::dx                        =    0.1
+CoordBase::dy                        =    0.1
+CoordBase::dz                        =    0.1
+
+driver::ghost_size                   = 4
+
+CoordBase::boundary_size_x_lower     = 4
+CoordBase::boundary_size_y_lower     = 4
+CoordBase::boundary_size_z_lower     = 4
+CoordBase::boundary_size_x_upper     = 4
+CoordBase::boundary_size_y_upper     = 4
+CoordBase::boundary_size_z_upper     = 4
+
+CoordBase::boundary_shiftout_x_lower = 1
+CoordBase::boundary_shiftout_y_lower = 1
+CoordBase::boundary_shiftout_z_lower = 1
+
+ReflectionSymmetry::reflection_x     = yes
+ReflectionSymmetry::reflection_y     = yes
+ReflectionSymmetry::reflection_z     = yes
+ReflectionSymmetry::avoid_origin_x   = no
+ReflectionSymmetry::avoid_origin_y   = no
+ReflectionSymmetry::avoid_origin_z   = no
+
+
+Time::dtfac                          = 0.125
+
+
+# Initial Data
+#------------------------------------------------------------------------------
+
+ADMBase::initial_data                 = "brilldata2D"
+ADMBase::metric_type				          = "physical"
+StaticConformal::conformal_storage    = "factor"
+ADMBase::initial_lapse                = "one"
+ADMBase::initial_shift                = "zero"
+ADMBase::initial_dtlapse              = "zero"
+ADMBase::initial_dtshift              = "zero"
+
+ADMMacros::spatial_order = 4
+ADMBase::lapse_timelevels             = 3
+ADMBase::shift_timelevels             = 3
+ADMBase::metric_timelevels            = 3
+
+InitBase::initial_data_setup_method   = "init_some_levels"
+Carpet::init_fill_timelevels          = yes
+Carpet::init_3_timelevels             = no
+
+# Evolution
+#------------------------------------------------------------------------------
+ADMBase::evolution_method         = "ML_BSSN"
+ADMBase::lapse_evolution_method   = "ML_BSSN"
+ADMBase::shift_evolution_method   = "ML_BSSN"
+ADMBase::dtlapse_evolution_method = "ML_BSSN"
+ADMBase::dtshift_evolution_method = "ML_BSSN"
+
+ML_BSSN::timelevels = 3
+
+ML_BSSN::harmonicF           = 2.0    # 1+log
+ML_BSSN::harmonicN           = 1      # 1+log
+ML_BSSN::ShiftGammaCoeff     = 0.0
+ML_BSSN::LapseACoeff         = 1.0
+ML_BSSN::ShiftBCoeff         = 0.0
+ML_BSSN::AlphaDriver         = 0.0
+ML_BSSN::BetaDriver          = 0.0
+ML_BSSN::LapseAdvectionCoeff = 0.0
+ML_BSSN::ShiftAdvectionCoeff = 0.0
+
+ML_BSSN::MinimumLapse        = 1.0e-8
+
+# Boundary conditions
+#------------------------------------------------------------------------------
+
+ML_BSSN::initial_boundary_condition = "extrapolate-gammas"
+ML_BSSN::rhs_boundary_condition     = "NewRad"
+Boundary::radpower                  = 2
+
+ML_BSSN::ML_log_confac_bound = "none"
+ML_BSSN::ML_metric_bound     = "none"
+ML_BSSN::ML_Gamma_bound      = "none"
+ML_BSSN::ML_trace_curv_bound = "none"
+ML_BSSN::ML_curv_bound       = "none"
+ML_BSSN::ML_lapse_bound      = "none"
+ML_BSSN::ML_dtlapse_bound    = "none"
+ML_BSSN::ML_shift_bound      = "none"
+ML_BSSN::ML_dtshift_bound    = "none"
+
+# Spatial finite differencing
+#------------------------------------------------------------------------------
+
+SummationByParts::order = 4
+ML_BSSN::fdOrder        = 4
+
+
+# Integration method
+#------------------------------------------------------------------------------
+
+MoL::ODE_Method                 = "RK4"
+MoL::MoL_Intermediate_Steps     = 4
+MoL::MoL_Num_Scratch_Levels     = 1
+
+Carpet::num_integrator_substeps = 4
+
+# AMR
+#------------------------------------------------------------------------------
+Carpet::max_refinement_levels = 2
+CarpetRegrid2::num_centres  = 1
+CarpetRegrid2::num_levels_1 = 1
+#CarpetRegrid2::radius_1[1]  = 5.0
+#CarpetRegrid2::radius_1[2]  = 1.0
+#CarpetRegrid2::radius_1[3]  = 1.5
+#CarpetRegrid2::radius_1[4]  = 0.75
+
+Carpet::prolongation_order_space        = 3
+Carpet::prolongation_order_time         = 2
+CarpetLib::use_higher_order_restriction = yes
+CarpetLib::restriction_order_space      = 3
+Carpet::no_split_direction              = 2 # avoid empty line confusing test system
+
+#Apparent horizon
+#------------------------------------------------------------------------------
+
+ActiveThorns = "AEILocalInterp SphericalSurface AHFinderDirect"
+
+AHFinderDirect::verbose_level                            = "physics details"
+AHFinderDirect::output_BH_diagnostics                    = "true"
+
+AHFinderDirect::find_every = 20
+
+AHFinderDirect::run_at_CCTK_POST_RECOVER_VARIABLES = no
+
+AHFinderDirect::geometry_interpolator_name = "Lagrange polynomial interpolation"
+AHFinderDirect::geometry_interpolator_pars = "order=4"
+AHFinderDirect::surface_interpolator_name  = "Lagrange polynomial interpolation"
+AHFinderDirect::surface_interpolator_pars  = "order=4"
+
+AHFinderDirect::output_h_every = 10
+
+AHFinderDirect::N_horizons = 1
+
+AHFinderDirect::initial_guess_method[1] = "coordinate sphere"
+
+AHFinderDirect::origin_x[1] = 0.0
+AHFinderDirect::origin_y[1] = 0.0
+AHFinderDirect::origin_z[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__radius[1] = 2.5
+
+# Poison
+#-------------------------------------------------------------------------------
+
+Carpet::poison_new_timelevels = yes
+CarpetLib::poison_new_memory  = yes
+
+# Check for NaNs
+#-------------------------------------------------------------------------------
+
+#Carpet::poison_new_timelevels = yes
+#CarpetLib::poison_new_memory  = yes
+Carpet::check_for_poison      = no
+
+NaNChecker::check_every     = 20
+NanChecker::check_after     = 0
+NaNChecker::report_max      = 10
+# NaNChecker::verbose         = "all"
+NaNChecker::action_if_found = "terminate"
+NaNChecker::out_NaNmask     = yes
+NaNChecker::check_vars      = "
+  ADMBase::lapse
+"
+
+# I/O thorns
+#-------------------------------------------------------------------------------
+
+Cactus::cctk_run_title       = $parfile
+IO::out_dir                  = $parfile
+IO::out_fileinfo             = "none"
+IO::parfile_write            = "no"
+
+IOBasic::outInfo_every       = 50
+IOBasic::outInfo_vars        = "ADMBase::alp"
+
+
+IOASCII::output_symmetry_points = no
+IOASCII::out3D_ghosts           = no
+
+IOScalar::outScalar_every      = 10
+IOScalar::one_file_per_group   = "yes"
+IOScalar::outScalar_reductions = "minimum maximum average norm1 norm2"
+IOScalar::outScalar_vars       = "
+# ADMBase::lapse
+# ADMBase::shift
+# ADMBase::metric
+# ADMBase::curv
+# ADMBase::dtlapse
+ ADMBase::dtshift
+ ML_ADMConstraints::ML_Ham
+# ML_ADMConstraints::ML_mom
+ ML_BSSN::ML_Ham
+# ML_BSSN::ML_mom
+# SystemStatistics::process_memory_mb{out_every=4}
+# SphericalSurface::sf_radius
+"
+
+
+# 1D text output
+IOASCII::out1D_every            = 10
+IOASCII::out_precision          = 8
+IOASCII::out1D_d                = yes
+IOASCII::out1D_x                = yes
+IOASCII::out1D_y                = yes
+IOASCII::out1D_z                = yes
+IOASCII::out1D_vars             = "
+  ADMBase::lapse
+  ML_ADMConstraints::ML_Ham
+  ADMBase::kxx
+  ADMBase::kyy
+  ADMBase::kzz
+  ML_BSSN::At11
+  ML_BSSN::At12
+  ML_BSSN::ML_dtlapse
+  ML_BSSN::ML_dtshift
+  ML_BSSN::ML_Gamma
+  ML_BSSN::gt11
+  ML_BSSN::gt12
+  ML_BSSN::gt13
+  ML_BSSN::ML_Ham
+"
+
+#  BrillEvolve::brillpsi
+#  ML_BSSN::ML_curvrhs
+#  ML_BSSN::ML_dtlapserhs
+#  ML_BSSN::ML_dtshiftrhs
+#  ML_BSSN::ML_Gammarhs
+#  ML_BSSN::ML_lapserhs
+#  ML_BSSN::ML_log_confacrhs
+#  ML_BSSN::ML_metricrhs
+#  ML_BSSN::ML_shiftrhs
+#  ML_BSSN::ML_trace_curvrhs
+
+CarpetIOASCII::compact_format = false
+
+# Run termination
+#-------------------------------------------------------------------------------
+
+#Cactus::terminate       = "iteration"
+#Cactus::cctk_itlast     = 100
+
+Cactus::terminate       = "time"
+Cactus::cctk_final_time = 7.0

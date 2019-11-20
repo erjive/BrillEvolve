@@ -1,0 +1,10 @@
+# Interface definition for thorn BrillEvolve
+
+implements: BrillEvolve
+inherits: grid ADMBase StaticConformal
+
+CCTK_REAL brillconf type=gf tags='tensortypealias="Scalar" tensorweight=0'
+{
+  brillpsi
+} "Conformal factor for Brill data"
+
