@@ -1,10 +1,18 @@
 # Interface definition for thorn BrillEvolve
 
 implements: BrillEvolve
-inherits: grid ADMBase StaticConformal
+
+inherits: grid ADMBase StaticConformal LeanBSSNMoL time
 
 CCTK_REAL brillconf type=gf tags='tensortypealias="Scalar" tensorweight=0'
 {
   brillpsi
 } "Conformal factor for Brill data"
 
+
+CCTK_REAL gaugespeed type=gf tags='tensortypealias="Scalar" tensorweight=0'
+{
+  vxx
+  vyy
+  vzz
+} "Gauge speed in x,y,z directions"

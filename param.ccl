@@ -5,7 +5,7 @@ shares: ADMBase
 
 EXTENDS KEYWORD initial_data
 {
-   "brilldata"   :: "Brill wave initial data"
+   "brilldata3D" :: "Brill wave initial data"
    "brilldata2D" :: "Brill wave initial data assuming axisymmetry"
 }
 
@@ -51,4 +51,7 @@ CCTK_REAL gundlachsigmar "Gundlach Brill wave: sigma in r"
 {
   *:* :: ""
 } 1.
+
+shares:time
+USES KEYWORD timestep_method
 

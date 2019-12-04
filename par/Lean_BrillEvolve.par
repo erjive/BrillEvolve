@@ -60,17 +60,16 @@ ActiveThorns = "
 #------------------------------------------------------------------------------
 #Read initial data
 
-IO::filereader_ID_dir   = "/home/erik/simulations/IDBrilla5/output-0000/IDBrillMoLCarpet/"
-#IO::filereader_ID_dir   = "../simulations/IDBrillMoL-n2dtol0/output-0000/IDBrillMoL"
-IO::filereader_ID_files = "brillpsi.it_2840"
-#IO::filereader_ID_files = "brillpsi"
+#IO::filereader_ID_dir   = "/home/erik/simulations/IDBrilla5BiB/output-0000/IDBrillMoLCarpet/"
+#IO::filereader_ID_files = "brillpsi.it_2825"
+IO::filereader_ID_dir   = "/home/erik/simulations/IDBrilla5_r5/output-0000/IDBrillMoLCarpet/"
+IO::filereader_ID_files = "brillpsi.it_2894"
+
 IO::filereader_ID_vars  = "BrillEvolve::brillpsi{alias='IDBrillMoL::phi'}"
-#IO::filereader_ID_vars  = "brillpsi"
 
 #Brill wave parameters
 #-------------------------------------------------------------------------------
 BrillEvolve :: gundlacha = 5.0
-
 
 # Grid setup
 #------------------------------------------------------------------------------
@@ -83,12 +82,12 @@ CoordBase::domainsize                = "minmax"
 CoordBase::xmin                      =    0.0
 CoordBase::ymin                      =    0.0
 CoordBase::zmin                      =    0.0
-CoordBase::xmax                      =   +10.0
-CoordBase::ymax                      =   +10.0
-CoordBase::zmax                      =   +10.0
-CoordBase::dx                        =    0.1
-CoordBase::dy                        =    0.1
-CoordBase::dz                        =    0.1
+CoordBase::xmax                      =   +5.0
+CoordBase::ymax                      =   +5.0
+CoordBase::zmax                      =   +5.0
+CoordBase::dx                        =    0.05
+CoordBase::dy                        =    0.05
+CoordBase::dz                        =    0.05
 
 driver::ghost_size                   = 4
 
@@ -110,7 +109,9 @@ ReflectionSymmetry::avoid_origin_x   = no
 ReflectionSymmetry::avoid_origin_y   = no
 ReflectionSymmetry::avoid_origin_z   = no
 
-Time::dtfac                          = 0.125
+Time::timestep_method = "courant_speed"
+Time::courant_fac     = 0.5
+#Time::dtfac           = 0.125
 
 
 # Initial Data
@@ -230,7 +231,7 @@ Carpet::no_split_direction              = 2 # avoid empty line confusing test sy
 Carpet::poison_new_timelevels = yes
 CarpetLib::poison_new_memory  = yes
 
-NaNChecker::check_every     = 50
+NaNChecker::check_every     = 512
 NanChecker::check_after     = 0
 NaNChecker::report_max      = 10
 # NaNChecker::verbose         = "all"
@@ -248,7 +249,7 @@ ActiveThorns = "AEILocalInterp SphericalSurface AHFinderDirect"
 AHFinderDirect::verbose_level                            = "physics details"
 AHFinderDirect::output_BH_diagnostics                    = "true"
 
-AHFinderDirect::find_every = 20
+AHFinderDirect::find_every = 0
 
 AHFinderDirect::run_at_CCTK_POST_RECOVER_VARIABLES = no
 
@@ -257,7 +258,7 @@ AHFinderDirect::geometry_interpolator_pars = "order=4"
 AHFinderDirect::surface_interpolator_name  = "Lagrange polynomial interpolation"
 AHFinderDirect::surface_interpolator_pars  = "order=4"
 
-AHFinderDirect::output_h_every = 10
+AHFinderDirect::output_h_every = 25
 
 AHFinderDirect::N_horizons = 1
 
@@ -327,5 +328,12 @@ CarpetIOASCII::compact_format = false
 #Cactus::terminate       = "iteration"
 #Cactus::cctk_itlast     = 100
 
+#Checkpoint
+#ActiveThorns ="IOHDF5Util IOHDF5"
+#IOHDF5::checkpoint           = yes
+#IO::checkpoint_dir           = $parfile
+#IO::checkpoint_on_terminate  = yes
+#IO::checkpoint_file          = "BrillEvola5"
+
 Cactus::terminate       = "time"
-Cactus::cctk_final_time = 7.0
+Cactus::cctk_final_time = 80.0
